@@ -1,4 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
+import { hash } from 'bcryptjs'
+
 import User from '../models/User';
 
 @EntityRepository(User)
@@ -9,6 +11,12 @@ class UsersRepository extends Repository<User> {
     });
 
     return findUser || null;
+  }
+
+  public async hashPassword(password: string): Promise<string> {
+    const hashedPassword = await hash(password, 8);
+
+    return hashedPassword;
   }
 }
 

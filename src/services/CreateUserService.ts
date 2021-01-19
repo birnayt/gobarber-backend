@@ -14,16 +14,18 @@ class CreateUserService {
   public async execute({ name, email, password }: Request): Promise<User> {
     const usersRepository = getCustomRepository(UsersRepository);
 
-    const checkUserExists = usersRepository.findByEmail(email);
+    const checkUserExists = await usersRepository.findByEmail(email);
 
     if (checkUserExists) {
       throw Error('This email is already registered.');
     }
 
+    const hashedPassword = await usersRepository.hashPassword(password);
+
     const user = usersRepository.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     await usersRepository.save(user);
